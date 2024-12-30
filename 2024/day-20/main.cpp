@@ -7,92 +7,73 @@ vector<vector<int>>directions = {
    {1,0}
 };
 pair<int, int> S, E;
-int n, m;
-//edmonds karp
-long long bfs(vector<pair<int, int>> mustMarked){
+int n, m, min_improvement=100, max_cheating = 20;
+vector<vector<int>> dist2End;
+void explorative_bfs(){
+   queue<tuple<int, int, int>>q;//row, col, time
+   q.push({E.first, E.second, 0});
    set<pair<int, int>>marked;
-   map<pair<int, int>, pair<int, int>> _parent;
-   queue<tuple<int, int> >q;//row, col
-   
-   q.push({S.first, S.second});
-   _parent[S]={-1,-1};
-
    while(!q.empty()){
-	 auto [row, col] = q.front(); q.pop();
-	 if(row==E.first && col==E.second){
-	    pair<int, int> current = E;
-	    break;
-	 }
-	 if(marked.count({row,col})) continue;
-	 marked.insert({row,col});
-	 for(auto dir:directions){
-	     tuple<int, int> _next(row+dir[0], col+dir[1]);
-	     auto [next_row, next_col] = _next;
-	     if(next_row<0 || next_row==n || next_col<0 || next_col==m)continue;
-	     if(marked.count({next_row, next_col}))continue;
-	     if(grid[next_row][next_col]=='#')continue;
-	     _parent[{next_row, next_col}]= {row, col};
-	     q.push(_next);
-	 }
+     auto [row, col, dist] = q.front(); q.pop();
+     if(marked.count({row, col}))continue;
+     marked.insert({row, col});
+     dist2End[row][col]=dist;
+     for(auto delta:directions){
+	 int next_row = row+delta[0], next_col = col+delta[1];
+	 if(next_row < 0 || next_row>=n || next_col<0 || next_col>=m)continue;
+	 if(marked.count({next_row, next_col}))continue;
+	 if(grid[next_row][next_col]=='#')continue;
+	 q.push({next_row, next_col, dist+1});
+     }
    }
-
-   set<pair<int, int>>optimal;
-   auto tmp = grid;
-   for( auto v = E; v!=S; v=_parent[v]){
-	   if(tmp[v.first][v.second]!='E')
-	   tmp[v.first][v.second]='*';
-	   optimal.insert(v);
+}
+int manhatan_dist(pair<int, int> A, pair<int, int> B){
+    return abs(A.first-B.first)+abs(A.second-B.second);
+}
+set<pair<int, int>> marked;
+long long cheating_from(int row, int col, int max_cheating, int score){
+   long long res = 0;
+   for(int deltax=-max_cheating; deltax<=max_cheating; deltax++){
+     int current_row = row+deltax;
+     if(current_row<=0 || current_row>=n-1)continue;
+     for(int deltay=-max_cheating; deltay<=max_cheating; deltay++){
+       int current_col = col+deltay;
+       if(current_col<=0 || current_col>=m-1)continue;
+       if(grid[current_row][current_col]=='#')continue;
+       if(marked.count({current_row, current_col}))continue;
+       int dist = manhatan_dist({row, col}, {current_row, current_col});
+       if(dist>max_cheating)continue;
+       int current_score = dist2End[row][col];
+       int next_score = dist + dist2End[current_row][current_col];
+       int improvement = current_score-next_score;
+       if(improvement >= min_improvement) res++;
+     }
    }
-   cout <<optimal.size()<<endl;
-   for(auto ii:mustMarked){
-	   cout << ii.first<<","<<ii.second<<endl;
-   }
-   for(auto ii:mustMarked){
-	   tmp[ii.first][ii.second]='X';
-   }
-
-	   if(optimal.size()==64)
-   for(auto i:tmp){
-	   cout <<i<<endl;
-   }
-   cout <<endl;
-   long long res = optimal.size();
-   for(auto ii:mustMarked){
-	   tmp[ii.first][ii.second]='X';
-	   if(optimal.find(ii)==optimal.end()) res=INT_MAX;
-   }
-   cout <<res <<endl;
    return res;
 }
-map<int, int> picosec_cheats;
-long long solve2(){
-   vector<pair<int, int>> cheat_all;
-   auto reference = bfs(cheat_all);
-   cout << reference<<endl;
-   for(int i = 1 ;i+1 < n; i++){
-      for(int j = 1; j+1 < m; j++){
-	 if(grid[i][j]=='#')cheat_all.push_back({i, j});
-      }
+long long bfs_with_cheat(int max_cheating){
+   long long res = 0;
+   queue<tuple<int ,int, int>> q;
+   q.push({S.first, S.second, 0});
+   while(!q.empty()){
+     auto [row, col, dist] = q.front(); q.pop();
+     if(marked.count({row, col}))continue;
+     marked.insert({row, col});
+     res += cheating_from(row, col, max_cheating, dist);
+     for(auto delta:directions){
+	 int next_row = row+delta[0], next_col = col+delta[1];
+	 if(next_row < 0 || next_row>=n || next_col<0 || next_col>=m)continue;
+	 if(marked.count({next_row, next_col}))continue;
+	 if(grid[next_row][next_col]=='#')continue;
+	 q.push({next_row, next_col, dist+1});
+     }
    }
-   for(int i = 0; i < cheat_all.size(); i++){
-       auto ii = cheat_all[i];
-       grid[ii.first][ii.second]='.';
-       picosec_cheats[bfs({ii})]++;
-       for(int j = i+1; j<cheat_all.size(); j++){
-	 auto jj = cheat_all[j];
-	 if(abs(jj.first-ii.first)+abs(jj.second-ii.second)!=1)continue;
-         grid[jj.first][jj.second]='.';
-         picosec_cheats[bfs({ii, jj})]++;
-         grid[jj.first][jj.second]='#';
-       }
-       grid[ii.first][ii.second]='#';
-   }
-   cout <<reference<<endl;
-   for(auto ii:picosec_cheats){
-	  cout <<reference-ii.first <<" "<<ii.first<<" " <<ii.second<<endl;
-   }
-
-   return 0;
+   return res;
+}
+long long solve(){
+   dist2End.assign(n, vector<int>(m, INT_MAX));
+   explorative_bfs();
+   return bfs_with_cheat(max_cheating);
 }
 int main(){
    string line;
@@ -104,6 +85,6 @@ int main(){
 	   if(grid[i][j]=='E')E={i,j};
       }
    }
-   cout << solve2() <<endl;
+   cout << solve() <<endl;
    return 0;
 }
