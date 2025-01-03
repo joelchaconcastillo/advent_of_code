@@ -28,11 +28,6 @@ string solve(){
       }
       cliques = new_cliques;
    }
-/*   for(auto clique:cliques){
-	   string tmp="";
-	   for(auto node:clique)tmp+=node+",";
-	   cout << tmp<<endl;
-   }*/
    for(auto node:maxClique) password+=node+",";
    password.pop_back();
    return password;
