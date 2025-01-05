@@ -21,6 +21,13 @@ void parseInput(){
    }
 
 }
+/*
+ * assumptions based on full adder: 
+ * Zn = (Xn ⊕ Yn) ⊕ Cn-1
+ * Cn = (Xn * Yn) + (Cn-1 * (Xn ⊕ Yn))
+ *
+ * with C0 = (Xn * Yn)
+ * */
 string solve(){
    string res="";
    parseInput();
