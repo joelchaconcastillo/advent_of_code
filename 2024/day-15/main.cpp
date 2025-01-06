@@ -2,12 +2,6 @@
 using namespace std;
 vector<string> grid;
 int n, m;
-map<char, pair<int, int> > dir={
-	{{'<'},{0,-1}},
-	{{'>'},{0,1}},
-	{{'v'},{1,0}},
-	{{'^'},{-1,0}}
-};
 void _print(vector<string> &grid){
    for(int i = 0 ;i < n; i++){
 	   cout << grid[i]<<endl;
