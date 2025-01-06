@@ -7,11 +7,11 @@ int main(){
 	   left.push_back(l);
 	   right.push_back(r);
    }
-   unordered_map<int, int> rightCount;
-   for(auto i:right)rightCount[i]++;
+   sort(left.begin(), left.end());
+   sort(right.begin(), right.end());
    long long res = 0;
    for(int i = 0 ; i< left.size(); i++){
-	  res += left[i]*rightCount[left[i]];
+	res += labs(left[i]-right[i]);
    }
    cout << res<<endl;
    return 0;
