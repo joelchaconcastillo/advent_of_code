@@ -56,9 +56,9 @@ void parse_input(){
 long long tracking(){
    	queue<tuple<int, int, int>>qq;
 	set<pair<int, int>>paths;
-	for(int i=0; i< 4; i++){
+	for(int dir=0; dir< 4; dir++){
 	  auto key = hashing(_end.first, _end.second, i);
-	  if( dist[key] !=  optimalCost)continue;
+	  if( dist[key] !=  optimalCost)continue;//no a feasible direction!!!
 	  qq.push({_end.first, _end.second, i});
 	}
 	while(!qq.empty()){
@@ -66,7 +66,6 @@ long long tracking(){
 	     auto key = hashing(row, col, dir);
 	     if(row==-1)continue;
 	     paths.insert({row, col});
-	     grid[row][col]='O';
 	     for(auto _to:parents[key]){
 		qq.push(_to);
 	     }
