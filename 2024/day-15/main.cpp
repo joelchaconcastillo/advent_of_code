@@ -71,8 +71,8 @@ int main(){
    for(auto move:instructions){
       if(move=='<') _move(pos.first, pos.second, 0, -1);
       if(move == '>') _move(pos.first, pos.second, 0, 1);
-      if(move == '^') {_move(pos.first, pos.second,-1,0); }
-      if(move == 'v') {_move(pos.first, pos.second, 1,0); }
+      if(move == '^') _move(pos.first, pos.second,-1,0);
+      if(move == 'v') _move(pos.first, pos.second, 1,0);
    }
    long long res = 0;
    for(int i = 0 ; i < n; i++){
