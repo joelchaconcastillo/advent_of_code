@@ -21,14 +21,10 @@ int main(){
 		   if(ii==jj)continue;
 		int deltaRows = -ii.first+jj.first;
 		int deltaCols = -ii.second+jj.second;
-		int R = ii.first;
-		int C = ii.second;
-		    res.insert({R, C});
-		while(R-deltaRows>=0 && R-deltaRows<n && C-deltaCols>=0 && C-deltaCols<m){
-		    R -= deltaRows;
-		    C -= deltaCols;
-		    res.insert({R, C});
-		}
+		int R = ii.first - deltaRows;
+		int C = ii.second - deltaCols;
+		if(R<0||R>=n||C<0||C>=m)continue;
+		res.insert({R, C});
 	   }
        }
    }
