@@ -18,8 +18,6 @@ int main(){
 	  if(grid[i][j] == '^') current={i, j};
       }
    }
-   cout << n<<" "<<m<<endl;
-   return 0;
    grid[current.first][current.second]='.';
    auto marked=grid;
    while(true){
